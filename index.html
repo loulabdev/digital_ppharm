@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&family=Gowun+Batang:wght@400;700&family=Gowun+Mono&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <title>디지털 종이약국</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#3d3929">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              serif: ['"Noto Serif KR"', "serif"],
+              sans: ['"Pretendard"', "sans-serif"],
+            },
+            colors: {
+              paper: {
+                50: "#fdfbf7",
+                100: "#f7f3e8",
+                200: "#efe5cd",
+                300: "#e5d2ac",
+                800: "#5c4d3c",
+                900: "#3e3429",
+              },
+              ink: {
+                800: "#2c2c2c",
+                900: "#1a1a1a",
+              },
+              seal: "#c14e4e",
+            },
+          },
+        },
+      };
+    </script>
+
+    <link rel="stylesheet" href="/index.css" />
+  </head>
+  <script>
+/* 개발 중 비활성화
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(() => console.log('SW 등록 완료'))
+      .catch((e) => console.log('SW 등록 실패:', e));
+  });
+}
+*/
+</script>
+  <body class="bg-paper-50 text-ink-800 font-sans antialiased min-h-screen">
+    <div id="root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
+</html>
