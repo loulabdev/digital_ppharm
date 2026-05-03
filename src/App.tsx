@@ -12,7 +12,7 @@ import {
   AppState, MoodKey, ConcernKey, ReadStyleKey,
   QuizAnswers, Prescription, SavedPrescription, BookBookmark,
 } from "./types";
-import { Clock3, Trash2, Bookmark, ChevronDown, ChevronUp, BookOpen, Leaf } from "lucide-react";
+import { Trash2, Bookmark, ChevronDown, ChevronUp, BookOpen, Leaf } from "lucide-react";
 
 // ─── 폰트 / 색상 토큰 ────────────────────────────────────────────────────────
 const F          = "'Gowun Batang', 'Noto Serif KR', Georgia, serif";
@@ -340,103 +340,139 @@ const App: React.FC = () => {
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // IDLE 화면 (홈)
+  // IDLE 화면 (홈) — 처방전 약국 디자인
   // ══════════════════════════════════════════════════════════════════════════
+
+  // 처방전 격자 배경
+  const RX_BG = "#f5f0e8";
+  const RX_PAPER = "#fffdf7";
+  const RX_RED = "#b5262b";
+  const RX_GREEN = "#4a8c5c";
+  const RX_BORDER = "#c8b89a";
+  const RX_INK = "#2c1810";
+  const RX_MUTED = "#8a7a6a";
+
+  const gridBg: React.CSSProperties = {
+    backgroundImage: `
+      repeating-linear-gradient(0deg,transparent,transparent 27px,rgba(180,160,120,0.13) 28px),
+      repeating-linear-gradient(90deg,transparent,transparent 27px,rgba(180,160,120,0.07) 28px)
+    `,
+  };
+
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: BG, fontFamily: F }}>
-      <main style={{ flex: 1, padding: "clamp(12px,3vw,28px) clamp(10px,3vw,20px) 48px", display: "flex", flexDirection: "column", alignItems: "center" }}>
-        <style dangerouslySetInnerHTML={{ __html: `
-          @media(max-width:767px){
-            .book-inner{flex-direction:column!important;}
-            .book-left-page{border-right:none!important;border-bottom:1px dashed rgba(110,84,40,0.16)!important;}
-            .book-spine{display:none!important;}
-            .book-edge-l,.book-edge-r{display:none!important;}
-          }
-        ` }} />
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: RX_BG, fontFamily: F, ...gridBg }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @keyframes rxPulse{0%,100%{opacity:1;}50%{opacity:0.6;}}
+        .rx-cta:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(181,38,43,0.32)!important;}
+        .rx-cta{transition:transform 0.15s,box-shadow 0.15s;}
+        .rx-record-row:hover{background:rgba(255,255,255,0.85)!important;}
+        @media(max-width:600px){.rx-two-col{flex-direction:column!important;}}
+      ` }} />
 
-        <div style={{ width: "100%", maxWidth: 860, border: `3px solid ${GREEN_DARK}`, borderRadius: 6, boxShadow: "0 10px 26px rgba(0,0,0,0.16),0 2px 8px rgba(0,0,0,0.08)", position: "relative", marginTop: 12 }}>
-          <div style={{ position: "absolute", left: -3, right: -3, top: -13, height: 13, background: `linear-gradient(to bottom,#0f2018,${GREEN_DARK} 60%,#4f6b59)`, border: `3px solid ${GREEN_DARK}`, borderBottom: "none", borderRadius: "4px 4px 0 0", zIndex: 20 }} />
+      <main style={{ flex: 1, padding: "clamp(12px,3vw,24px) clamp(10px,3vw,16px) 40px", display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-          <div className="book-inner" style={{ display: "flex" }}>
-            {/* 왼쪽 테이프 */}
-            <div className="book-edge-l" style={{ width: "clamp(8px,1.2vw,13px)", flexShrink: 0, zIndex: 5, position: "relative", background: "repeating-linear-gradient(to right,#ede3ce 0,#ede3ce 1.5px,#c8b888 2px,#f0e6d4 4px,#c8b888 4.5px,#ede3ce 6px,#c8b888 6.5px,#f0e6d4 8.5px,#c8b888 9px,#ede3ce 13px)" }}>
-              <div style={{ position: "absolute", left: 0, top: -13, bottom: 0, width: 6, background: GREEN_DARK }} />
-            </div>
+        {/* ── 처방전 카드 전체 래퍼 ── */}
+        <div style={{ width: "100%", maxWidth: 780, background: RX_PAPER, border: `1.5px solid ${RX_BORDER}`, borderTop: `6px solid ${RX_RED}`, borderRadius: 4, boxShadow: "3px 3px 0 rgba(0,0,0,0.06),0 8px 24px rgba(0,0,0,0.10)", position: "relative" }}>
 
-            {/* 왼쪽 페이지 — 헤더 + 문진 시작 버튼 */}
-            <div className="book-left-page" style={{ flex: 1, ...paperStyle(PAGE1), padding: "22px 18px 30px 20px", borderRight: `1px dashed ${BORDER}`, display: "flex", flexDirection: "column", gap: 16 }}>
-              {/* 헤더 */}
-              <div style={{ background: `linear-gradient(135deg,${GREEN_DARK} 0%,#1a3224 100%)`, borderRadius: 10, padding: "14px 16px", boxShadow: "0 6px 18px rgba(0,0,0,0.12)" }}>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
-                  <div>
-                    <h1 style={{ fontFamily: F, fontSize: 18, color: PAGE2, letterSpacing: "0.06em", margin: 0 }}>디지털 종이약국</h1>
-                    <p style={{ fontFamily: GB_FONT, fontSize: 9, color: "rgba(245,240,228,0.55)", marginTop: 2, letterSpacing: "0.08em" }}>DIGITAL PAPER PHARMACY</p>
-                  </div>
-                  {/* 메뉴 */}
-                  <div style={{ position: "relative" }}>
-                    <button type="button" onClick={() => setIsMenuOpen(p => !p)}
-                      style={{ background: isMenuOpen ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.25)", borderRadius: 5, cursor: "pointer", padding: "4px 8px", color: PAGE2, fontSize: 10, fontFamily: F }}>
-                      ≡
-                    </button>
-                    {isMenuOpen && (
-                      <>
-                        <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setIsMenuOpen(false)} />
-                        <div style={{ position: "absolute", top: "calc(100% + 4px)", right: 0, zIndex: 100, background: "#fdf8ee", border: `1px solid ${BORDER}`, borderRadius: 8, boxShadow: "0 4px 14px rgba(0,0,0,0.10)", minWidth: 130, overflow: "hidden" }}>
-                          <button type="button" onClick={handleShare}
-                            style={{ width: "100%", textAlign: "left", padding: "9px 13px", fontFamily: F, fontSize: 11, color: INK, background: "none", border: "none", cursor: "pointer", borderBottom: `1px dashed ${BORDER}` }}>
-                            공유하기
-                          </button>
-                          <button type="button" onClick={() => { setIsMenuOpen(false); handleResetStorage(); }}
-                            style={{ width: "100%", textAlign: "left", padding: "9px 13px", fontFamily: F, fontSize: 11, color: "#9a4a3a", background: "none", border: "none", cursor: "pointer" }}>
-                            ⚠ 기록 전체 삭제
-                          </button>
-                        </div>
-                      </>
-                    )}
-                  </div>
+          {/* ── 헤더 영역 ── */}
+          <div style={{ padding: "16px 18px 12px", borderBottom: `1px dashed ${RX_BORDER}` }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 12 }}>
+
+              {/* 십자 + 타이틀 */}
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                {/* 빨간 십자 */}
+                <div style={{ position: "relative", width: 28, height: 28, flexShrink: 0 }}>
+                  <div style={{ position: "absolute", width: 28, height: 10, top: 9, left: 0, background: RX_RED, borderRadius: 2 }} />
+                  <div style={{ position: "absolute", width: 10, height: 28, top: 0, left: 9, background: RX_RED, borderRadius: 2 }} />
                 </div>
-                <p style={{ fontFamily: GB_FONT, fontSize: 11, color: "rgba(245,240,228,0.65)", marginTop: 2, lineHeight: 1.6 }}>
-                  오늘 마음의 증상을 알려주세요 — 책을 처방해드립니다
-                </p>
+                <div>
+                  <h1 style={{ fontFamily: F, fontSize: 20, fontWeight: 700, color: RX_INK, margin: 0, letterSpacing: "-0.3px", lineHeight: 1.2 }}>디지털 종이약국</h1>
+                  <p style={{ fontFamily: GB_FONT, fontSize: 9, color: RX_MUTED, marginTop: 2, letterSpacing: "3px" }}>DIGITAL PAPER PHARMACY</p>
+                </div>
               </div>
 
-              {/* 문진 시작 버튼 */}
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                <button
-                  type="button"
-                  onClick={() => { setQuizStep(0); setQuizAnswers({}); setAppState(AppState.QUIZ); }}
-                  style={{
-                    width: "100%", padding: "18px", fontFamily: F, fontSize: 15, fontWeight: 700,
-                    background: GREEN_DARK, color: PAGE2, border: "none", borderRadius: 10, cursor: "pointer",
-                    letterSpacing: "0.05em", boxShadow: `0 4px 14px rgba(26,58,32,0.22)`,
-                    transition: "transform 0.15s, box-shadow 0.15s",
-                  }}
-                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 6px 18px rgba(26,58,32,0.28)"; }}
-                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 14px rgba(26,58,32,0.22)"; }}
-                >
-                  📋 문진 시작하기
-                </button>
-                <p style={{ fontFamily: F, fontSize: 10, color: MUTED, textAlign: "center", lineHeight: 1.7 }}>
-                  기분 · 고민 · 독서 결 3가지를 선택하면<br />맞춤 책을 처방해드립니다
+              {/* Rx 스탬프 + 메뉴 */}
+              <div style={{ display: "flex", alignItems: "flex-start", gap: 8 }}>
+                <div style={{ border: `2px solid ${RX_RED}`, borderRadius: "50%", width: 44, height: 44, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", opacity: 0.72, transform: "rotate(-8deg)", flexShrink: 0 }}>
+                  <span style={{ fontFamily: GB_FONT, fontSize: 7, color: RX_RED, fontWeight: 700, letterSpacing: 1 }}>처방</span>
+                  <span style={{ fontFamily: GB_FONT, fontSize: 13, color: RX_RED, fontWeight: 700 }}>Rx</span>
+                </div>
+                {/* 메뉴 버튼 */}
+                <div style={{ position: "relative" }}>
+                  <button type="button" onClick={() => setIsMenuOpen(p => !p)}
+                    style={{ background: "none", border: `1px solid ${RX_BORDER}`, borderRadius: 3, padding: "4px 9px", fontFamily: F, fontSize: 12, color: RX_MUTED, cursor: "pointer" }}>
+                    ≡
+                  </button>
+                  {isMenuOpen && (
+                    <>
+                      <div style={{ position: "fixed", inset: 0, zIndex: 99 }} onClick={() => setIsMenuOpen(false)} />
+                      <div style={{ position: "absolute", top: "calc(100% + 4px)", right: 0, zIndex: 100, background: RX_PAPER, border: `1px solid ${RX_BORDER}`, borderRadius: 4, boxShadow: "0 4px 14px rgba(0,0,0,0.10)", minWidth: 130, overflow: "hidden" }}>
+                        <button type="button" onClick={handleShare}
+                          style={{ width: "100%", textAlign: "left", padding: "9px 13px", fontFamily: F, fontSize: 11, color: RX_INK, background: "none", border: "none", cursor: "pointer", borderBottom: `1px dashed ${RX_BORDER}` }}>
+                          공유하기
+                        </button>
+                        <button type="button" onClick={() => { setIsMenuOpen(false); handleResetStorage(); }}
+                          style={{ width: "100%", textAlign: "left", padding: "9px 13px", fontFamily: F, fontSize: 11, color: "#9a4a3a", background: "none", border: "none", cursor: "pointer" }}>
+                          ⚠ 기록 전체 삭제
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* 태그라인 */}
+            <p style={{ fontFamily: F, fontSize: 11, color: RX_MUTED, marginTop: 10, display: "flex", alignItems: "center", gap: 6 }}>
+           
+              오늘 마음의 증상을 알려주세요 — 책을 처방해드립니다
+            </p>
+          </div>
+
+          {/* ── 본문 2단 레이아웃 ── */}
+          <div className="rx-two-col" style={{ display: "flex", gap: 0 }}>
+
+            {/* 왼쪽 — 문진 시작 */}
+            <div style={{ flex: 1, padding: "18px 18px 22px", borderRight: `1px dashed ${RX_BORDER}` }}>
+
+              {/* CTA 버튼 */}
+              <button
+                type="button"
+                className="rx-cta"
+                onClick={() => { setQuizStep(0); setQuizAnswers({}); setAppState(AppState.QUIZ); }}
+                style={{
+                  width: "100%", padding: "16px", fontFamily: F, fontSize: 15, fontWeight: 700,
+                  background: RX_RED, color: "#fff", border: "none", borderRadius: 4,
+                  cursor: "pointer", letterSpacing: "0.05em",
+                  boxShadow: `0 4px 14px rgba(181,38,43,0.25)`,
+                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
+                }}
+              >
+               
+                📋 문진 시작하기
+              </button>
+
+              {/* 설명 */}
+              <div style={{ marginTop: 10, background: "rgba(255,255,255,0.6)", border: `1px dashed ${RX_BORDER}`, borderRadius: 3, padding: "10px 13px" }}>
+                <p style={{ fontFamily: F, fontSize: 11, color: RX_MUTED, lineHeight: 1.7 }}>
+                  기분 · 고민 · 독서 결<br />3가지를 선택하면 맞춤 책을 처방해드립니다
                 </p>
               </div>
 
               {/* 최근 처방 미리보기 */}
               {savedPrescriptions.length > 0 && (
-                <div style={{ borderTop: `1px dashed ${BORDER}`, paddingTop: 12 }}>
-                  <p style={{ fontFamily: F, fontSize: 10, color: MUTED, marginBottom: 8, letterSpacing: "0.08em" }}>── 최근 처방 ──</p>
-                  <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
+                <div style={{ marginTop: 14, borderTop: `1px dashed ${RX_BORDER}`, paddingTop: 12 }}>
+                  <p style={{ fontFamily: F, fontSize: 9, color: RX_MUTED, marginBottom: 8, letterSpacing: "0.08em" }}>── 최근 처방 ──</p>
+                  <div style={{ display: "flex", gap: 7, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
                     {savedPrescriptions.slice(0, 3).map(item => {
                       const firstBook = item.prescription.recommended_books[0];
                       return (
-                        <button
-                          key={item.id} type="button" onClick={() => handleOpenSaved(item)}
-                          style={{ flexShrink: 0, width: 120, background: PAGE2, border: `1px solid ${BORDER}`, borderRadius: 6, padding: "8px 10px", cursor: "pointer", textAlign: "left" }}
-                        >
-                          <p style={{ fontFamily: F, fontSize: 11, color: INK, lineHeight: 1.4, marginBottom: 4, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
+                        <button key={item.id} type="button" onClick={() => handleOpenSaved(item)}
+                          style={{ flexShrink: 0, width: 115, background: "rgba(255,255,255,0.7)", border: `1px solid ${RX_BORDER}`, borderLeft: `3px solid ${RX_RED}`, borderRadius: 3, padding: "8px 10px", cursor: "pointer", textAlign: "left" }}>
+                          <p style={{ fontFamily: F, fontSize: 11, color: RX_INK, lineHeight: 1.4, marginBottom: 3, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
                             {firstBook?.title ?? "—"}
                           </p>
-                          <p style={{ fontFamily: F, fontSize: 9, color: MUTED }}>{item.userInput}</p>
+                          <p style={{ fontFamily: F, fontSize: 9, color: RX_MUTED }}>{item.userInput}</p>
                         </button>
                       );
                     })}
@@ -445,36 +481,31 @@ const App: React.FC = () => {
               )}
             </div>
 
-            {/* 가름끈 */}
-            <div className="book-spine" style={{ width: "clamp(14px,2vw,22px)", flexShrink: 0, position: "relative", zIndex: 10, backgroundColor: PAGE1 }}>
-              <div style={{ position: "absolute", left: "50%", top: 0, bottom: 0, width: 1, background: BORDER, transform: "translateX(-50%)" }} />
-              <div style={{ position: "absolute", left: "50%", top: "50%", transform: "translate(-50%,-50%) rotate(-90deg)", whiteSpace: "nowrap", fontFamily: F, fontSize: 8, color: MUTED, letterSpacing: "0.15em" }}>종이약국</div>
-            </div>
+            {/* 오른쪽 — 기록 */}
+            <div style={{ flex: 1, padding: "18px 18px 22px", display: "flex", flexDirection: "column", gap: 8 }}>
 
-            {/* 오른쪽 페이지 — 기록 */}
-            <div style={{ flex: 1, ...paperStyle(PAGE2), padding: "22px 18px 30px 16px", display: "flex", flexDirection: "column", gap: 12 }}>
-              {/* 서가 기록 */}
-              <div style={{ borderRadius: 8, overflow: "hidden", border: `1px solid ${BORDER}`, background: PAGE2 }}>
+              {/* 처방 기록 카드 */}
+              <div style={{ borderRadius: 3, overflow: "hidden", border: `1px solid ${RX_BORDER}`, borderLeft: `4px solid ${RX_RED}` }}>
                 <button type="button" onClick={() => setIsSavedOpen(p => !p)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 13px", background: "none", border: "none", cursor: "pointer" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 5, fontFamily: F, fontSize: 11.5, color: BROWN }}>
-                    <Clock3 style={{ width: 11, height: 11, color: "#6e5428" }} />
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 13px", background: "none", border: "none", cursor: "pointer" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: F, fontSize: 12, color: RX_INK, fontWeight: 500 }}>
+                    <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#fde8e8", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: GB_FONT, fontSize: 9, color: RX_RED, fontWeight: 700, flexShrink: 0 }}>Rx</span>
                     처방 기록
-                    <span style={{ fontFamily: F, fontSize: 8.5, padding: "1px 5px", borderRadius: 10, background: GREEN_DARK, color: PAGE2 }}>{savedPrescriptions.length}</span>
+                    <span style={{ fontFamily: F, fontSize: 9, padding: "1px 6px", borderRadius: 10, background: "#fde8e8", color: RX_RED, fontWeight: 700 }}>{savedPrescriptions.length}</span>
                   </span>
-                  {isSavedOpen ? <ChevronUp style={{ width: 11, height: 11, color: MUTED }} /> : <ChevronDown style={{ width: 11, height: 11, color: MUTED }} />}
+                  {isSavedOpen ? <ChevronUp style={{ width: 11, height: 11, color: RX_MUTED }} /> : <ChevronDown style={{ width: 11, height: 11, color: RX_MUTED }} />}
                 </button>
                 {isSavedOpen && (
-                  <div style={{ height: 150, overflowY: "auto", borderTop: `1px dashed ${BORDER}`, padding: "7px 11px 9px" }}>
+                  <div style={{ height: 150, overflowY: "auto", borderTop: `1px dashed ${RX_BORDER}`, padding: "7px 11px 9px" }}>
                     {savedPrescriptions.length === 0 ? (
-                      <p style={{ fontFamily: F, fontSize: 10, color: MUTED, textAlign: "center", paddingTop: 6 }}>아직 처방 기록이 없어요.</p>
+                      <p style={{ fontFamily: F, fontSize: 10, color: RX_MUTED, textAlign: "center", paddingTop: 6 }}>아직 처방 기록이 없어요.</p>
                     ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                         {savedPrescriptions.map(item => (
-                          <div key={item.id} style={{ borderRadius: 6, padding: "7px 9px", background: "rgba(255,255,255,0.55)", border: `1px solid rgba(110,84,40,0.12)` }}>
+                          <div key={item.id} className="rx-record-row" style={{ borderRadius: 3, padding: "7px 9px", background: "rgba(255,255,255,0.55)", border: `1px solid rgba(200,184,154,0.5)`, transition: "background 0.12s" }}>
                             <button type="button" onClick={() => handleOpenSaved(item)} style={{ width: "100%", textAlign: "left", background: "none", border: "none", cursor: "pointer", padding: 0 }}>
-                              <p style={{ fontFamily: GB_FONT, fontSize: 11, color: INK, lineHeight: 1.5, marginBottom: 2 }}>{item.userInput}</p>
-                              <p style={{ fontFamily: F, fontSize: 9, color: MUTED }}>{formatRxNum(item.id)} · {formatDate(item.createdAt)}</p>
+                              <p style={{ fontFamily: GB_FONT, fontSize: 11, color: RX_INK, lineHeight: 1.5, marginBottom: 2 }}>{item.userInput}</p>
+                              <p style={{ fontFamily: F, fontSize: 9, color: RX_MUTED }}>{formatRxNum(item.id)} · {formatDate(item.createdAt)}</p>
                             </button>
                             <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 4 }}>
                               <button type="button" onClick={() => handleDeleteSaved(item.id)} style={{ display: "flex", alignItems: "center", gap: 3, fontFamily: F, fontSize: 9, color: "#a04030", background: "none", border: "none", cursor: "pointer", opacity: 0.6 }}>
@@ -489,30 +520,32 @@ const App: React.FC = () => {
                 )}
               </div>
 
-              {/* 북마크 */}
-              <div style={{ borderRadius: 8, overflow: "hidden", border: `1px solid ${BORDER}`, background: PAGE2 }}>
+              {/* 북마크 카드 */}
+              <div style={{ borderRadius: 3, overflow: "hidden", border: `1px solid ${RX_BORDER}`, borderLeft: `4px solid ${RX_GREEN}` }}>
                 <button type="button" onClick={() => setIsBookmarksOpen(p => !p)}
-                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 13px", background: "none", border: "none", cursor: "pointer" }}>
-                  <span style={{ display: "flex", alignItems: "center", gap: 5, fontFamily: F, fontSize: 11.5, color: BROWN }}>
-                    <Bookmark style={{ width: 11, height: 11, color: "#6e5428" }} />
+                  style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 13px", background: "none", border: "none", cursor: "pointer" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: 7, fontFamily: F, fontSize: 12, color: RX_INK, fontWeight: 500 }}>
+                    <span style={{ width: 22, height: 22, borderRadius: "50%", background: "#e8f4ec", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <Bookmark style={{ width: 10, height: 10, color: RX_GREEN }} />
+                    </span>
                     북마크 도서
-                    <span style={{ fontFamily: F, fontSize: 8.5, padding: "1px 5px", borderRadius: 10, background: GREEN_DARK, color: PAGE2 }}>{bookmarks.length}</span>
+                    <span style={{ fontFamily: F, fontSize: 9, padding: "1px 6px", borderRadius: 10, background: "#e8f4ec", color: RX_GREEN, fontWeight: 700 }}>{bookmarks.length}</span>
                   </span>
-                  {isBookmarksOpen ? <ChevronUp style={{ width: 11, height: 11, color: MUTED }} /> : <ChevronDown style={{ width: 11, height: 11, color: MUTED }} />}
+                  {isBookmarksOpen ? <ChevronUp style={{ width: 11, height: 11, color: RX_MUTED }} /> : <ChevronDown style={{ width: 11, height: 11, color: RX_MUTED }} />}
                 </button>
                 {isBookmarksOpen && (
-                  <div style={{ maxHeight: 180, overflowY: "auto", borderTop: `1px dashed ${BORDER}`, padding: "7px 11px 9px" }}>
+                  <div style={{ maxHeight: 180, overflowY: "auto", borderTop: `1px dashed ${RX_BORDER}`, padding: "7px 11px 9px" }}>
                     {bookmarks.length === 0 ? (
-                      <p style={{ fontFamily: F, fontSize: 10, color: MUTED, textAlign: "center", paddingTop: 6 }}>북마크한 도서가 없어요.</p>
+                      <p style={{ fontFamily: F, fontSize: 10, color: RX_MUTED, textAlign: "center", paddingTop: 6 }}>북마크한 도서가 없어요.</p>
                     ) : (
-                      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
                         {bookmarks.slice(0, 10).map(item => (
-                          <div key={item.id} style={{ borderRadius: 6, padding: "7px 9px", background: "rgba(255,255,255,0.55)", border: `1px solid rgba(110,84,40,0.12)` }}>
+                          <div key={item.id} style={{ borderRadius: 3, padding: "7px 9px", background: "rgba(255,255,255,0.55)", border: `1px solid rgba(200,184,154,0.5)` }}>
                             <p style={{ fontFamily: GB_FONT, fontSize: 11.5, color: BROWN }}>
-                              <BookOpen style={{ width: 9, height: 9, display: "inline", marginRight: 4, color: GREEN_MID, verticalAlign: "middle" }} />
+                              <BookOpen style={{ width: 9, height: 9, display: "inline", marginRight: 4, color: RX_GREEN, verticalAlign: "middle" }} />
                               {item.book.title}
                             </p>
-                            <p style={{ fontFamily: F, fontSize: 9, color: MUTED, marginTop: 2 }}>{item.book.author} · {item.book.publisher}</p>
+                            <p style={{ fontFamily: F, fontSize: 9, color: RX_MUTED, marginTop: 2 }}>{item.book.author} · {item.book.publisher}</p>
                           </div>
                         ))}
                       </div>
@@ -521,22 +554,21 @@ const App: React.FC = () => {
                 )}
               </div>
 
-              {/* 안내 문구 */}
-              <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: 5, paddingTop: 8 }}>
-                <Leaf style={{ width: 9, height: 9, color: MUTED, flexShrink: 0 }} />
-                <span style={{ fontFamily: F, fontSize: 9, color: MUTED }}>마음 기록 · 맞춤형 도서 처방 · 도서관 연동</span>
+              {/* 하단 허브 장식 */}
+              <div style={{ marginTop: "auto", paddingTop: 8, display: "flex", alignItems: "center", gap: 6 }}>
+                <div style={{ display: "flex", gap: 3, alignItems: "center" }}>
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: RX_GREEN }} />
+                  <div style={{ width: 1, height: 11, background: RX_GREEN, borderRadius: 1 }} />
+                  <div style={{ width: 5, height: 5, borderRadius: "50%", background: RX_GREEN }} />
+                </div>
+                <span style={{ fontFamily: F, fontSize: 9, color: RX_MUTED }}>마음 기록 · 맞춤형 도서 처방 · 도서관 연동</span>
               </div>
-            </div>
-
-            {/* 오른쪽 테이프 */}
-            <div className="book-edge-r" style={{ width: "clamp(8px,1.2vw,13px)", flexShrink: 0, zIndex: 5, position: "relative", background: "repeating-linear-gradient(to left,#ede3ce 0,#ede3ce 1.5px,#c8b888 2px,#f0e6d4 4px,#c8b888 4.5px,#ede3ce 6px,#c8b888 6.5px,#f0e6d4 8.5px,#c8b888 9px,#ede3ce 13px)" }}>
-              <div style={{ position: "absolute", right: 0, top: -13, bottom: 0, width: 6, background: GREEN_DARK }} />
             </div>
           </div>
         </div>
       </main>
 
-      <footer style={{ padding: "11px", textAlign: "center", fontFamily: F, fontSize: 9.5, color: "rgba(90,70,40,0.38)", borderTop: `1px solid ${BORDER}`, background: BG }}>
+      <footer style={{ padding: "11px", textAlign: "center", fontFamily: F, fontSize: 9.5, color: "rgba(90,70,40,0.38)", borderTop: `1px solid ${RX_BORDER}`, background: RX_PAPER }}>
         © 2026 디지털 종이약국 by lou · Powered by Google Gemini
       </footer>
     </div>
