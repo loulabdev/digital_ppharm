@@ -12,18 +12,27 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(500).json({ error: "LIBRARY_API_KEY가 설정되지 않았습니다." });
   }
 
-  // /api/library 뒤의 경로 추출 (예: /srchBooks, /bookExist 등)
   const rawPath = req.url || "";
-  const subPath = rawPath.replace(/^\/api\/library/, "") || "/srchBooks";
+
+  // Vercel에서 req.url은 /libSrch?... 형태로 옴 (/api/library 없음)
+  // 쿼리스트링 분리
+  const [pathPart, queryPart] = rawPath.split("?");
+
+  // /libSrch 또는 /api/library/libSrch 둘 다 처리
+  const cleanPath = pathPart
+    .replace(/^\/api\/library/, "")  // /api/library/libSrch → /libSrch
+    .replace(/^\/api/, "")           // /api/libSrch → /libSrch
+    || "/srchBooks";
 
   try {
-    const target = new URL(`https://data4library.kr/api${subPath}`);
+    const target = new URL(`https://data4library.kr/api${cleanPath}`);
 
-    // 쿼리스트링 전달 + authKey 주입
-    const incoming = new URL(rawPath, "http://localhost");
-    incoming.searchParams.forEach((value, key) => {
-      target.searchParams.set(key, value);
-    });
+    // 쿼리스트링 파싱 후 주입
+    if (queryPart) {
+      new URLSearchParams(queryPart).forEach((value, key) => {
+        target.searchParams.set(key, value);
+      });
+    }
     target.searchParams.set("authKey", authKey);
     target.searchParams.set("format", "json");
 
