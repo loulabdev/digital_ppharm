@@ -237,7 +237,7 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
   const [userRegionName,     setUserRegionName]     = useState<string | null>(null);
   const [showAllRegions,     setShowAllRegions]     = useState<Record<string, boolean>>({});
   const [descExpanded,       setDescExpanded]       = useState<Record<string, boolean>>({});
-  // ── 한 줄 메모 (v2 추가) ─────────────────────────────────────────────────
+  // ── 한 줄 메모 ────────────────────────────────────────────────────────────
   const [memo,               setMemo]               = useState("");
   const [memoSaved,          setMemoSaved]          = useState(false);
 
@@ -689,6 +689,54 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
             </div>
             <SH label="근처  소장  도서관" />
             <LibraryBlock book={book} />
+
+            {/* ── ✏ 오늘의 한 줄 — 오른쪽 페이지 인라인 메모 ── */}
+            <SH label="오늘의  한  줄" />
+            <div style={{
+              position: "relative",
+              marginBottom: 8,
+              backgroundImage: linesBg,
+              backgroundColor: "transparent",
+              borderRadius: 4,
+              padding: "4px 2px 2px",
+            }}>
+              <textarea
+                value={memo}
+                onChange={e => setMemo(e.target.value)}
+                placeholder="이 책을 처방받으며 드는 생각..."
+                maxLength={120}
+                rows={3}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  borderBottom: `1px dotted ${C.bdr}`,
+                  resize: "none",
+                  fontFamily: "'Gowun Batang', 'Noto Serif KR', serif",
+                  fontSize: 11,
+                  color: C.ink,
+                  lineHeight: "28px",
+                  outline: "none",
+                  padding: "0 4px",
+                  boxSizing: "border-box",
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 6, marginTop: 2 }}>
+                {memoSaved && <span style={{ ...SE, fontSize: 9, color: C.cover1 }}>저장됨 ✓</span>}
+                <button type="button" onClick={handleSaveMemo} disabled={!memo.trim()}
+                  style={{
+                    ...SE, fontSize: 9, padding: "2px 10px", borderRadius: 10,
+                    border: `1px solid ${memo.trim() ? C.bdr : "transparent"}`,
+                    background: memo.trim() ? C.greenDark : "transparent",
+                    color: memo.trim() ? "#f5efe3" : C.ink3,
+                    cursor: memo.trim() ? "pointer" : "default",
+                    transition: "all 0.2s",
+                  }}>
+                  저장
+                </button>
+              </div>
+            </div>
+
             <div style={{ marginTop: "auto", paddingTop: 6, display: "flex", flexDirection: "column", gap: 7 }}>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center", position: "relative", zIndex: 10 }}>
                 <button type="button" onClick={() => setBuyPanel(buyPanel === key ? null : key)}
@@ -808,6 +856,46 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
           </div>
           <SH label="근처  소장  도서관" />
           <LibraryBlock book={book} />
+
+          {/* ── ✏ 모바일 한 줄 메모 ── */}
+          <SH label="오늘의  한  줄" />
+          <div style={{ position: "relative", marginBottom: 8, backgroundImage: linesBg, padding: "4px 2px 2px" }}>
+            <textarea
+              value={memo}
+              onChange={e => setMemo(e.target.value)}
+              placeholder="이 책을 처방받으며 드는 생각..."
+              maxLength={120}
+              rows={3}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                borderBottom: `1px dotted ${C.bdr}`,
+                resize: "none",
+                fontFamily: "'Gowun Batang', 'Noto Serif KR', serif",
+                fontSize: 11,
+                color: C.ink,
+                lineHeight: "28px",
+                outline: "none",
+                padding: "0 4px",
+                boxSizing: "border-box",
+              }}
+            />
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 6, marginTop: 2 }}>
+              {memoSaved && <span style={{ ...SE, fontSize: 9, color: C.cover1 }}>저장됨 ✓</span>}
+              <button type="button" onClick={handleSaveMemo} disabled={!memo.trim()}
+                style={{
+                  ...SE, fontSize: 9, padding: "2px 10px", borderRadius: 10,
+                  border: `1px solid ${memo.trim() ? C.bdr : "transparent"}`,
+                  background: memo.trim() ? C.greenDark : "transparent",
+                  color: memo.trim() ? "#f5efe3" : C.ink3,
+                  cursor: memo.trim() ? "pointer" : "default",
+                }}>
+                저장
+              </button>
+            </div>
+          </div>
+
           <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginTop: 8, alignItems: "center", position: "relative", zIndex: 10, overflow: "visible" }}>
             <button type="button" onClick={() => setBuyPanel(buyPanel === key ? null : key)}
               style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 16, border: `1px solid rgba(110,84,40,0.28)`, background: "none", cursor: "pointer", ...GB, fontSize: 9, color: C.ink2 }}>
@@ -881,7 +969,7 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
 
       <div className="animate-fade-in" style={{ maxWidth: 720, margin: "0 auto", padding: "0 16px 80px" }}>
 
-        {/* ── [v2] 문진 태그 ── */}
+        {/* ── 문진 태그 ── */}
         {data.quiz_answers && (
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap", padding: "14px 0 6px", alignItems: "center" }}>
             <span style={{ ...SE, fontSize: 9, color: C.ink3, letterSpacing: "0.08em" }}>처방 조건</span>
@@ -993,29 +1081,7 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
           )}
         </section>
 
-        {/* ── [v2] 한 줄 메모 ── */}
-        <section style={{ background: "rgba(255,255,255,0.6)", border: `1px solid ${C.bdr}`, borderRadius: 12, padding: "14px 18px", marginBottom: 24 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-            <p style={{ ...SE, fontSize: 10, color: C.ink3, letterSpacing: "0.08em" }}>✏ 한 줄 메모</p>
-            {memoSaved && <span style={{ ...SE, fontSize: 9, color: C.cover1 }}>저장됨 ✓</span>}
-          </div>
-          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-            <input
-              type="text"
-              value={memo}
-              onChange={e => setMemo(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleSaveMemo(); }}
-              placeholder="오늘의 처방을 받으며 드는 생각 한 줄..."
-              maxLength={100}
-              style={{ flex: 1, border: "none", borderBottom: `1px solid ${C.bdr}`, background: "transparent", fontFamily: "'Gowun Batang', 'Noto Serif KR', serif", fontSize: 13, color: C.ink, padding: "4px 0", outline: "none" }}
-            />
-            <button type="button" onClick={handleSaveMemo} disabled={!memo.trim()}
-              style={{ ...SE, fontSize: 10, padding: "4px 12px", borderRadius: 12, border: `1px solid ${memo.trim() ? C.bdr : "transparent"}`, background: memo.trim() ? C.greenDark : "transparent", color: memo.trim() ? "#f5efe3" : C.ink3, cursor: memo.trim() ? "pointer" : "default", transition: "all 0.2s" }}>
-              저장
-            </button>
-          </div>
-        </section>
-
+        {/* ── 새로운 처방 버튼 ── */}
         <div style={{ paddingTop: 8 }}>
           <button type="button" onClick={onReset} style={{ ...SE, display: "flex", alignItems: "center", gap: 4, fontSize: 11, padding: "6px 14px", borderRadius: 20, border: `1px solid ${C.ink}`, background: C.ink, color: C.page1, cursor: "pointer" }}>
             새로운 처방 시작하기
