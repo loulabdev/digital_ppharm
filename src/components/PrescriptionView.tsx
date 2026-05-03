@@ -264,7 +264,12 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
   );
   const getBookKey     = (b: RecommendedBook) => `${b.title}__${b.author}__${b.publisher}`;
   const detectedEmotion = data.emotional_analysis.detected_emotion?.trim() || "";
-  const curatedBooks    = emotionBooks[detectedEmotion] || [];
+  const curatedBooks = useMemo(() => {
+    const key = Object.keys(emotionBooks).find(k =>
+      detectedEmotion.includes(k) || k.includes(detectedEmotion)
+    );
+    return key ? emotionBooks[key] : [];
+  }, [detectedEmotion]);
 
   const closePanel = useCallback(() => {
     cancelType(); setPanelUp(false);
@@ -556,7 +561,7 @@ const PrescriptionView: React.FC<Props> = ({ data, onReset, onBookmarksChange })
           {panelOpen ? <ChevronUp style={{ width: 9, height: 9, color: C.ink3 }} /> : <ChevronDown style={{ width: 9, height: 9, color: C.ink3 }} />}
         </button>
         {panelOpen && (
-          <div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, minWidth: 170, border: `1px solid ${C.bdr}`, borderRadius: 8, background: "#f8f4e8", boxShadow: "0 6px 20px rgba(0,0,0,0.18)", zIndex: 200, overflowY: "auto", maxHeight: 220 }}>
+          <div style={{ position: "absolute", bottom: "calc(100% + 6px)", top: "auto", left: 0, minWidth: 170, border: `1px solid ${C.bdr}`, borderRadius: 8, background: "#f8f4e8", boxShadow: "0 6px 20px rgba(0,0,0,0.18)", zIndex: 200, overflowY: "auto", maxHeight: 220 }}>
             {SEARCH_ITEMS.map(item => (
               <button key={item.id} type="button" onClick={() => handleSearchAction(book, item.id)}
                 style={{ width: "100%", display: "flex", alignItems: "center", gap: 7, padding: "9px 12px", border: "none", borderBottom: `1px solid rgba(110,84,40,0.09)`, background: checked[item.id] ? "rgba(80,110,92,0.08)" : "transparent", cursor: "pointer", textAlign: "left" }}>
