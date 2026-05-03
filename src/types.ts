@@ -4,11 +4,17 @@
 
 export type MoodKey =
   | "ANXIETY"   // 불안함
-  | "EXHAUSTED" // 지침
+  | "EXHAUSTED" // 지침·번아웃
   | "EMPTY"     // 공허함
-  | "COMFORT"   // 위로받고 싶어
-  | "EXCITED"   // 설렘
-  | "NUMB";     // 무감각
+  | "COMFORT"   // 위로받고 싶음
+  | "EXCITED"   // 설렘·기대
+  | "NUMB"      // 무감각
+  | "SAD"       // 슬픔·상실
+  | "LONELY"    // 외로움·고독
+  | "ANGRY"     // 분노·억울함
+  | "GUILTY"    // 죄책감·자책
+  | "CONFUSED"  // 혼란·방황
+  | "GRATEFUL"; // 감사·평온
 
 export type ConcernKey =
   | "RELATION"  // 관계
@@ -16,7 +22,9 @@ export type ConcernKey =
   | "DAILY"     // 일상
   | "WORK"      // 일·공부
   | "FAMILY"    // 가족
-  | "SELF";     // 자아
+  | "SELF"      // 자아
+  | "HEALTH"    // 건강
+  | "MONEY";    // 금전
 
 export type ReadStyleKey =
   | "LIGHT"  // 가볍게
